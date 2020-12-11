@@ -1,18 +1,6 @@
 <?php
 session_start();
 if( !$_SESSION ) header('Location: login.php');
-
-    $sUsers = file_get_contents('private/users.txt');
-    $aUsers = json_decode($sUsers);
-
-    $aTweets = [];
-
-    foreach($aUsers as $jUser) {
-        if( $_SESSION['id'] == $jUser->id){
-            $aTweets = $jUser->tweets;
-            break;
-        }
-    }
 ?>
 
 <!DOCTYPE html>
@@ -65,15 +53,15 @@ if( !$_SESSION ) header('Location: login.php');
             <div id="account">
                 <div id="picture"></div>
                 <div id="account-info">
-                    <p><strong>Name</strong></p>
-                    <p>@at</p>
+                    <p><strong><?= $_SESSION['userName'] ?></strong></p>
+                    <p>@<?= $_SESSION['userName'] ?></p>
                 </div>
                 <div id="arrow">
                     <svg viewBox="0 0 24 24" class="r-hkyrab r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr"><g><path d="M20.207 8.147c-.39-.39-1.023-.39-1.414 0L12 14.94 5.207 8.147c-.39-.39-1.023-.39-1.414 0-.39.39-.39 1.023 0 1.414l7.5 7.5c.195.196.45.294.707.294s.512-.098.707-.293l7.5-7.5c.39-.39.39-1.022 0-1.413z"></path></g></svg>
                 </div>
 
                 <?php
-                if( isset($_SESSION['id']) ){
+                if( isset($_SESSION['userId']) ){
                     ?>
                         <a class="popuptext" id="logOutPopup">Log out</a>
                     <?php
@@ -99,7 +87,7 @@ if( !$_SESSION ) header('Location: login.php');
                     </div>
                     <div id="middle-column2_2">
                         <div id="middle-row2_2_1">
-                            <form id="tweetForm" method="POST">
+                            <form id="tweetForm" method="POST" onsubmit="addTweet(); return false">
                                 <input id="tweetMessage" oninput="checkTyping()" name="tweetMessage" type="text" placeholder="What's happening?">
                             </form>
                         </div>
@@ -120,7 +108,7 @@ if( !$_SESSION ) header('Location: login.php');
                                     <svg viewBox="0 0 24 24" class="r-13gxpu9 r-4qtqp9 r-yyyyoo r-1q142lx r-50lct3 r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1srniue"><g><path d="M-37.9 18c-.1-.1-.1-.1-.1-.2.1 0 .1.1.1.2z"></path><path d="M-37.9 18c-.1-.1-.1-.1-.1-.2.1 0 .1.1.1.2zM18 2.2h-1.3v-.3c0-.4-.3-.8-.8-.8-.4 0-.8.3-.8.8v.3H7.7v-.3c0-.4-.3-.8-.8-.8-.4 0-.8.3-.8.8v.3H4.8c-1.4 0-2.5 1.1-2.5 2.5v13.1c0 1.4 1.1 2.5 2.5 2.5h2.9c.4 0 .8-.3.8-.8 0-.4-.3-.8-.8-.8H4.8c-.6 0-1-.5-1-1V7.9c0-.3.4-.7 1-.7H18c.6 0 1 .4 1 .7v1.8c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-5c-.1-1.4-1.2-2.5-2.6-2.5zm1 3.7c-.3-.1-.7-.2-1-.2H4.8c-.4 0-.7.1-1 .2V4.7c0-.6.5-1 1-1h1.3v.5c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-.5h7.5v.5c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-.5H18c.6 0 1 .5 1 1v1.2z"></path><path d="M15.5 10.4c-3.4 0-6.2 2.8-6.2 6.2 0 3.4 2.8 6.2 6.2 6.2 3.4 0 6.2-2.8 6.2-6.2 0-3.4-2.8-6.2-6.2-6.2zm0 11c-2.6 0-4.7-2.1-4.7-4.7s2.1-4.7 4.7-4.7 4.7 2.1 4.7 4.7c0 2.5-2.1 4.7-4.7 4.7z"></path><path d="M18.9 18.7c-.1.2-.4.4-.6.4-.1 0-.3 0-.4-.1l-3.1-2v-3c0-.4.3-.8.8-.8.4 0 .8.3.8.8v2.2l2.4 1.5c.2.2.3.6.1 1z"></path></g></svg>
                                 </div>
                             </div>
-                            <button disabled id="tweetBtn" type="button">Tweet</button>
+                            <button disabled id="tweetBtn" type="submit" form="tweetForm">Tweet</button>
                         </div>    
                     </div>
                 </div>
@@ -130,6 +118,24 @@ if( !$_SESSION ) header('Location: login.php');
                     <p>This is the best place to see what’s happening in your world. Find some people and topics to follow now.</p>
                     <button>Let's go!</button>
                 </div> -->
+                <div id="loader-container">
+                    <svg version="1.1" id="loader" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+                    <path opacity="0.2" fill="#1da1f2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+                    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+                    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
+                    <path fill="#1da1f2" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+                    C22.32,8.481,24.301,9.057,26.013,10.047z">
+                        <animateTransform attributeType="xml"
+                            attributeName="transform"
+                            type="rotate"
+                            from="0 20 20"
+                            to="360 20 20"
+                            dur="0.5s"
+                            repeatCount="indefinite"/>
+                    </path>
+                    </svg>
+                </div>
                 <div id="tweets">
                     <!-- <div id="break-line"></div> -->
                 </div>
@@ -142,7 +148,7 @@ if( !$_SESSION ) header('Location: login.php');
             <div id="bookmarks" class="subpage">
                 <div id="middle-row1">
                     <p>Bookmarks</p>
-                    <p>@at</p>
+                    <p>@<?= $_SESSION['userName'] ?></p>
                 </div>
                 <div id="middle-row2">
                     <p><strong>You haven’t added any Tweets to your Bookmarks yet</strong></p>
@@ -250,7 +256,7 @@ if( !$_SESSION ) header('Location: login.php');
                 <div id="modal-row2">
                     <div id="modal-row2_1">
                         <div id="picture"></div>
-                        <form id="modalTweetForm" method="POST">
+                        <form id="modalTweetForm" method="POST" onsubmit="modalAddTweet(); return false">
                             <input id="modalTweetMessage" oninput="modalCheckTyping()" name="modalTweetMessage" type="text" placeholder="What's happening?">
                         </form>
                     </div>
@@ -280,7 +286,7 @@ if( !$_SESSION ) header('Location: login.php');
                             <svg viewBox="0 0 24 24" class="r-13gxpu9 r-4qtqp9 r-yyyyoo r-1q142lx r-50lct3 r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1srniue"><g><path d="M-37.9 18c-.1-.1-.1-.1-.1-.2.1 0 .1.1.1.2z"></path><path d="M-37.9 18c-.1-.1-.1-.1-.1-.2.1 0 .1.1.1.2zM18 2.2h-1.3v-.3c0-.4-.3-.8-.8-.8-.4 0-.8.3-.8.8v.3H7.7v-.3c0-.4-.3-.8-.8-.8-.4 0-.8.3-.8.8v.3H4.8c-1.4 0-2.5 1.1-2.5 2.5v13.1c0 1.4 1.1 2.5 2.5 2.5h2.9c.4 0 .8-.3.8-.8 0-.4-.3-.8-.8-.8H4.8c-.6 0-1-.5-1-1V7.9c0-.3.4-.7 1-.7H18c.6 0 1 .4 1 .7v1.8c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-5c-.1-1.4-1.2-2.5-2.6-2.5zm1 3.7c-.3-.1-.7-.2-1-.2H4.8c-.4 0-.7.1-1 .2V4.7c0-.6.5-1 1-1h1.3v.5c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-.5h7.5v.5c0 .4.3.8.8.8.4 0 .8-.3.8-.8v-.5H18c.6 0 1 .5 1 1v1.2z"></path><path d="M15.5 10.4c-3.4 0-6.2 2.8-6.2 6.2 0 3.4 2.8 6.2 6.2 6.2 3.4 0 6.2-2.8 6.2-6.2 0-3.4-2.8-6.2-6.2-6.2zm0 11c-2.6 0-4.7-2.1-4.7-4.7s2.1-4.7 4.7-4.7 4.7 2.1 4.7 4.7c0 2.5-2.1 4.7-4.7 4.7z"></path><path d="M18.9 18.7c-.1.2-.4.4-.6.4-.1 0-.3 0-.4-.1l-3.1-2v-3c0-.4.3-.8.8-.8.4 0 .8.3.8.8v2.2l2.4 1.5c.2.2.3.6.1 1z"></path></g></svg>
                         </div>
                     </div>
-                    <button disabled id="modalTweetBtn" type="button">Tweet</button>
+                    <button disabled id="modalTweetBtn" type="submit" form="modalTweetForm">Tweet</button>
                 </div>
             </div>
         </div>

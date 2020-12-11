@@ -60,41 +60,45 @@ openModalBtn.addEventListener('click', function(){
 })
 
 closeModalBtn.addEventListener('click', function(){
-  modal.style.display = "none"
+  modal.style.display = 'none'
+  document.querySelector('#modalTweetMessage').value = ''
 })
 
 window.onclick = function(event){
   if(event.target == modal){
-    modal.style.display = "none"
+    modal.style.display = 'none'
+    document.querySelector('#modalTweetMessage').value = ''
   }
 }
 
 async function getTweets(){
+  document.querySelector('#loader-container').style.display = 'block'
+  
   try{
-    const connection = await fetch('apis/api-get-tweets.php?userId=' + localStorage.getItem('userID'))
+    const connection = await fetch('apis/api-get-tweets.php')
     const data = await connection.json()
 
-    if(data.status === 1){
+    if(data.status === '1'){
       data.tweets.forEach(function(tweet){
-        const divTweet = `<div class='tweet' id='${tweet.tweetId}'>
+        const divTweet = `<div class='tweet' id='${tweet.id}'>
           <div class='tweet-column1'>
             <div class='picture'></div>
           </div>   
           <div class='tweet-column2'>
             <div class='tweet-row1'>
-              <p><strong>Name</strong></p>
-              <p>@at</p>
-              <button class="editBtn" onclick="editTweet('${tweet.tweetId}'); return false">Edit</button>
-              <button class="deleteBtn" onclick="removeTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Delete</button>
-              <button class="updateBtn" onclick="updateTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Update</button>    
-              <button class="cancelBtn" onclick="cancelEdit('${tweet.tweetId}'); return false">Cancel</button> 
+              <p><strong>${data.userName}</strong></p>
+              <p>@${data.userName}</p>
+              <button class="editBtn" onclick="editTweet('${tweet.id}'); return false">Edit</button>
+              <button class="deleteBtn" onclick="removeTweet('${tweet.userId}', '${tweet.id}'); return false">Delete</button>
+              <button class="updateBtn" onclick="updateTweet('${tweet.userId}', '${tweet.id}'); return false">Update</button>    
+              <button class="cancelBtn" onclick="cancelEdit('${tweet.id}'); return false">Cancel</button> 
               <div class='arrow'>
                 <svg viewBox='0 0 24 24' class='r-hkyrab r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr'><g><path d='M20.207 8.147c-.39-.39-1.023-.39-1.414 0L12 14.94 5.207 8.147c-.39-.39-1.023-.39-1.414 0-.39.39-.39 1.023 0 1.414l7.5 7.5c.195.196.45.294.707.294s.512-.098.707-.293l7.5-7.5c.39-.39.39-1.022 0-1.413z'></path></g></svg>
               </div>
             </div>
             <div class='tweet-row2'>
-              <div class="tweetMessage">${tweet.message}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${tweet.message}">
+              <div class="tweetMessage">${tweet.msg}</div>
+              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${tweet.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -125,14 +129,13 @@ async function getTweets(){
   catch(err){
     console.log(err)
   }
+
+  document.querySelector('#loader-container').style.display = 'none'
 }
 window.onload = getTweets()
 
-document.querySelector('#tweetBtn').addEventListener('click', addTweet)
-document.querySelector('#modalTweetBtn').addEventListener('click', modalAddTweet)
-
 async function addTweet(){
-  const formData = new FormData(document.querySelector('#tweetForm'))
+  const formData = new FormData(document.querySelector("#tweetForm"))
 
   try{
     const options = {
@@ -143,31 +146,29 @@ async function addTweet(){
     const connection = await fetch('apis/api-create-tweet.php', options)
     const data = await connection.json()
 
-    if(data.status === 1){
+    if(data.status === '1'){
       document.querySelector('#tweetMessage').value = ''
       checkTyping()
 
-      const { tweet } = data
-
-      const divTweet = `<div class='tweet new' id='${tweet.tweetId}'>
+      const divTweet = `<div class='tweet new' id='${data.tweetId}'>
           <div class='tweet-column1'>
             <div class='picture'></div>
           </div>   
           <div class='tweet-column2'>
             <div class='tweet-row1'>
-              <p><strong>Name</strong></p>
-              <p>@at</p>
-              <button class="editBtn" onclick="editTweet('${tweet.tweetId}'); return false">Edit</button>
-              <button class="deleteBtn" onclick="removeTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Delete</button>
-              <button class="updateBtn" onclick="updateTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Update</button>    
-              <button class="cancelBtn" onclick="cancelEdit('${tweet.tweetId}'); return false">Cancel</button> 
+              <p><strong>${data.userName}</strong></p>
+              <p>@${data.userName}</p>
+              <button class="editBtn" onclick="editTweet('${data.tweetId}'); return false">Edit</button>
+              <button class="deleteBtn" onclick="removeTweet('${data.userId}', '${data.tweetId}'); return false">Delete</button>
+              <button class="updateBtn" onclick="updateTweet('${data.userId}', '${data.tweetId}'); return false">Update</button>    
+              <button class="cancelBtn" onclick="cancelEdit('${data.tweetId}'); return false">Cancel</button> 
               <div class='arrow'>
                 <svg viewBox='0 0 24 24' class='r-hkyrab r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr'><g><path d='M20.207 8.147c-.39-.39-1.023-.39-1.414 0L12 14.94 5.207 8.147c-.39-.39-1.023-.39-1.414 0-.39.39-.39 1.023 0 1.414l7.5 7.5c.195.196.45.294.707.294s.512-.098.707-.293l7.5-7.5c.39-.39.39-1.022 0-1.413z'></path></g></svg>
               </div>
             </div>
             <div class='tweet-row2'>
-              <div class="tweetMessage">${tweet.message}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${tweet.message}">
+              <div class="tweetMessage">${data.msg}</div>
+              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${data.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -201,8 +202,10 @@ async function addTweet(){
   }
 }
 
+// document.querySelector('#tweetBtn').addEventListener('click', addTweet)
+
 async function modalAddTweet(){
-  const formData = new FormData(document.querySelector('#modalTweetForm'))
+  const formData = new FormData(document.querySelector("#modalTweetForm"))
 
   try{
     const options = {
@@ -213,32 +216,30 @@ async function modalAddTweet(){
     const connection = await fetch('apis/api-modal-create-tweet.php', options)
     const data = await connection.json()
 
-    if(data.status === 1){
+    if(data.status === '1'){
       document.querySelector('#modalTweetMessage').value = ''
       modalCheckTyping()
       modal.style.display = "none"
 
-      const { tweet } = data
-
-      const divTweet = `<div class='tweet new' id='${tweet.tweetId}'>
+      const divTweet = `<div class='tweet new' id='${data.tweetId}'>
           <div class='tweet-column1'>
             <div class='picture'></div>
           </div>   
           <div class='tweet-column2'>
             <div class='tweet-row1'>
-              <p><strong>Name</strong></p>
-              <p>@at</p>
-              <button class="editBtn" onclick="editTweet('${tweet.tweetId}'); return false">Edit</button>
-              <button class="deleteBtn" onclick="removeTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Delete</button>
-              <button class="updateBtn" onclick="updateTweet('${tweet.userId}', '${tweet.tweetId}'); return false">Update</button>    
-              <button class="cancelBtn" onclick="cancelEdit('${tweet.tweetId}'); return false">Cancel</button> 
+              <p><strong>${data.userName}</strong></p>
+              <p>@${data.userName}</p>
+              <button class="editBtn" onclick="editTweet('${data.tweetId}'); return false">Edit</button>
+              <button class="deleteBtn" onclick="removeTweet('${data.userId}', '${data.tweetId}'); return false">Delete</button>
+              <button class="updateBtn" onclick="updateTweet('${data.userId}', '${data.tweetId}'); return false">Update</button>    
+              <button class="cancelBtn" onclick="cancelEdit('${data.tweetId}'); return false">Cancel</button> 
               <div class='arrow'>
                 <svg viewBox='0 0 24 24' class='r-hkyrab r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr'><g><path d='M20.207 8.147c-.39-.39-1.023-.39-1.414 0L12 14.94 5.207 8.147c-.39-.39-1.023-.39-1.414 0-.39.39-.39 1.023 0 1.414l7.5 7.5c.195.196.45.294.707.294s.512-.098.707-.293l7.5-7.5c.39-.39.39-1.022 0-1.413z'></path></g></svg>
               </div>
             </div>
             <div class='tweet-row2'>
-              <div class="tweetMessage">${tweet.message}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${tweet.message}">
+              <div class="tweetMessage">${data.msg}</div>
+              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${data.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -271,6 +272,8 @@ async function modalAddTweet(){
     console.log(err)
   }
 }
+
+// document.querySelector('#modalTweetBtn').addEventListener('click', modalAddTweet)
 
 async function removeTweet(userId, tweetId){
   try{
@@ -286,7 +289,7 @@ async function removeTweet(userId, tweetId){
     const connection = await fetch('apis/api-delete-tweet.php', options)
     const data = await connection.json()
 
-    if( data.status === 1 ){
+    if( data.status === '1' ){
       document.getElementById(`${tweetId}`).remove()
     }else{
       console.log(data.message)
@@ -336,7 +339,7 @@ async function updateTweet(userId, tweetId){
     const connection = await fetch('apis/api-update-tweet.php', options)
     const data = await connection.json()
 
-    if( data.status === 1 ){
+    if( data.status === '1' ){
       cancelEdit(tweetId)
       const rootElement = document.getElementById(`${tweetId}`)
       rootElement.querySelector('.tweetMessage').textContent = newInputValue
@@ -357,8 +360,7 @@ async function logOut(){
     const data = await connection.json()
 
     if(data){
-      localStorage.clear()
-      window.location = 'login.php'
+        window.location.replace('login.php') 
     }
 
   }

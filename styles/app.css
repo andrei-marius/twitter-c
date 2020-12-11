@@ -744,6 +744,7 @@ div#right{
     border: none;
     font-size: 19px;
     outline: none;
+    width: 100%;
 }
 #modal-row2_1 input::placeholder{
     color: rgb(170, 184, 194);
@@ -804,10 +805,13 @@ div#right{
     max-width: 22.5px;
     max-height: 22.5px;
 }
- #modal-row3 button{
+#modal-row3 button{
     box-shadow: none;
     height: 39px;
     width: 74px;
     opacity: 0.5;
     cursor: initial;
+}
+#loader-container{
+    text-align: center;
 }

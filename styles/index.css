@@ -46,16 +46,27 @@ body{
     display: grid;
     align-items: center;
     justify-content: center;
-    padding: 9rem;
+}
+#right #container{
+    display: grid;
+    max-width: 380px;
+    grid-gap: 2rem;
+    grid-template-rows: 0fr 3fr 0fr 0fr 0fr;
 }
 #right svg{
     width: 41.25px;
     height: 41.25px;
     fill: rgba(29, 161, 242, 1);
 }
-#right span:first-child{
-    font-size: 30px;
+#right span{
     font-weight: bold;
+}
+#right span:nth-child(2){
+    font-size: 30px;
+    overflow-wrap: break-word;
+}
+#right span:nth-child(3){
+    font-size: 15px;
 }
 #right a{
     text-decoration: none;
@@ -70,8 +81,8 @@ body{
     color: #fff;
     background: rgb(29, 161, 242);
 }
-#right a:first-child{
-    background: rgb(29, 161, 242);
+#right a:hover{
+    filter: brightness(0.95);
 }
 #bottom{
     width: 100%;
@@ -79,6 +90,7 @@ body{
     display: grid;
     grid-template-columns: repeat(17, 1fr);
     align-items: center;
+    padding: 0 1rem;
 }
 #bottom > a{
     font-size: 13px;

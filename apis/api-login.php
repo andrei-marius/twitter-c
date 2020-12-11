@@ -1,34 +1,39 @@
 <?php
-session_start();
+try{
+    if(!$_POST){ header('Location: login.php'); }
 
-if( !$_POST ){ header('Location: login.php'); }
+    if(empty($_POST['email'])){ sendError(400,'Missing email',__LINE__); }
+    if(empty($_POST['password'])){ sendError(400,'Missing password',__LINE__); }
 
-if( empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
-    sendError('Email is not valid', __LINE__);
-}
-if( empty($_POST['password']) || strlen($_POST['password']) < 5 || strlen($_POST['password']) > 20){
-    sendError('Password is not valid', __LINE__);
-}
+    require_once( __DIR__.'../../private/db.php' );
 
-$sUsers = file_get_contents(__DIR__ . '/../private/users.txt');
-$aUsers = json_decode($sUsers);
-
-$iTotalUsers = count($aUsers);
-
-foreach( $aUsers as $jUser ){
-    if( $_POST['email'] == $jUser->email && password_verify($_POST['password'], $jUser->password) ){
-        $_SESSION['id'] = $jUser->id;
-        echo '{"status":1,"msg":"user logged in","userId":"'.$jUser->id.'"}';
-        exit;
+    $q = $db->prepare('SELECT * FROM users WHERE sEmail = :sEmail LIMIT 1');
+    $q->bindValue(':sEmail', $_POST['email']);
+    $q->execute();
+    $row = $q->fetch();
+    if( !$row ){
+      sendError(401,'Incorrect email',__LINE__);
     }
-
-    if( $iTotalUsers == 1 ){
-        sendError('Incorrect credentials', __LINE__);
+  
+    if(password_verify($_POST['password'], $row[3])){
+      session_start();
+      $_SESSION['userId'] = $row[0];
+      $_SESSION['email'] = $row[1];
+      $_SESSION['userName'] = $row[2];
+      header('Content-Type: application/json');
+      echo '{"status":"1","message":"user logged in","userId":"'.$_SESSION['userId'].'"}';
+      exit;
+    }else{
+      sendError(401,'Incorrect password',__LINE__);
     }
-    $iTotalUsers--;
+}catch(PDOException $ex){
+    sendError(500,'System under maintainance',__LINE__);
 }
 
-function sendError($sMessage, $iLine){
-    echo '{"status":0, "message":"'.$sMessage.'", "line":'.$iLine.'}';
+function sendError($iResponseCode, $sMessage, $iLine){
+    http_response_code($iResponseCode);
+    header('Content-Type: application/json');
+    echo '{"message":"'.$sMessage.'","line":"'.$iLine.'"}';
     exit;
 }
+  

@@ -1,3 +1,8 @@
+<?php
+session_start();
+if( $_SESSION ) header('Location: home.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,17 +20,24 @@
             <span>Sign up to Twitter</span>
             <div id="email-container">
                 <div>
-                    <label for="">Email</label>
+                    <label>Email</label>
                 </div>
                 <input name="email" type="text">
             </div>
+            <div id="username-container">
+                <div>
+                    <label>Username</label>
+                </div>
+                <input name="username" type="text">
+            </div>
             <div id="password-container">
                 <div>
-                    <label for="">Password</label>
+                    <label>Password</label>
                 </div>
                 <input name="password" type="password">
             </div>
             <div id="error"></div>
+            <div id="success"></div>
             <div id="btn-container">
                 <button id="signupBtn" type="submit">Sign up</button>
             </div>

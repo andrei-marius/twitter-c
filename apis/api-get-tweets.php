@@ -1,32 +1,35 @@
 <?php
-session_start();
-if( !isset($_SESSION['id']) ) {
-    sendError('user not authenticated', __LINE__ ); 
-}
-    
-if( strlen($_SESSION['id']) !== 13 ) {
-    sendError('id not valid', __LINE__ ); 
+try{
+    session_start();
+    if( !$_SESSION ){ sendError(401,'User is not authenticated',__LINE__ ); }
+
+    require_once(__DIR__.'../../private/db.php');
+
+    $q = $db->prepare('SELECT * FROM tweets where iUserIdFk = :userId');
+    $q->bindValue(':userId', $_SESSION['userId']);
+    $q->execute();
+    $aRows = $q->fetchAll();
+    if( $aRows ){
+        $aRows = array_map(function($aRow){
+            return array(
+                'id' => $aRow['0'],
+                'userId' => $aRow['1'],
+                'msg' => $aRow['2']
+            );
+        }, $aRows);
+    header('Content-Type: application/json');
+    echo '{"status":"1","message":"tweets loaded","tweets":'.json_encode($aRows).',"userName":"'.$_SESSION['userName'].'"}';
+  }else{
+    sendError(500,'no data',__LINE__);
+  }
+  exit;  
+}catch(PDOException $ex){
+    sendError(500,'System under maintainance',__LINE__);
 }
 
-if( empty($_GET['userId']) ){
-    sendError('user id missing', __LINE__ ); 
-}
-
-if( $_SESSION['id'] !== $_GET['userId'] ){
-    sendError('you are not authorised', __LINE__ ); 
-}
-
-$sUsers = file_get_contents(__DIR__ . '/../private/users.txt');
-$aUsers = json_decode($sUsers);
-
-foreach( $aUsers as $jUser){
-    if( $_SESSION['id'] === $jUser->id){
-        echo '{"status":1, "tweets":'.json_encode($jUser->tweets).'}';
-        exit;
-    }
-}
-
-function sendError($sMessage, $iLine){
-    echo '{"status":0, "message":"'.$sMessage.'", "line":'.$iLine.'}';
+function sendError($iErrorCode, $sMessage, $iLine){
+    http_response_code($iErrorCode);
+    header('Content-Type: application/json');
+    echo '{"message":"'.$sMessage.'","line":"'.$iLine.'"}';
     exit;
-}
+  }

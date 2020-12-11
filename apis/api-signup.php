@@ -1,44 +1,72 @@
 <?php
-if( !$_POST ){ header('Location: signup.php'); }
+try{
+    if(!$_POST){ header('Location: signup.php'); }
 
-if( empty($_POST['email']) || !filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL)){
-  sendError('Email is not valid', __LINE__);
-} 
+    if(empty($_POST['email'])){ sendError(400,'Missing email',__LINE__); }
+    if(!filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL)){ sendError(400,'Email is not valid',__LINE__); }
+    if(empty($_POST['username'])){ sendError(400,'Missing username',__LINE__); }
+    if(strlen($_POST['username']) < 3){ sendError(400,'Username must be longer than 3 characters',__LINE__); }
+    if(strlen($_POST['username']) > 20 ){ sendError(400,'Username must not be longer than 20 characters',__LINE__); }
+    if(empty($_POST['password'])){ sendError(400,'Missing password',__LINE__); }
+    if(strlen($_POST['password']) < 5){ sendError(400,'Password must be at least 5 characters long',__LINE__); }
+    if(strlen($_POST['password']) > 100 ){ sendError(400,'Password must not be longer than 100 characters',__LINE__); }
 
-if( empty($_POST['password'])){
-  sendError('Password is not valid', __LINE__);
+    require_once(__DIR__.'../../private/db.php');
+
+    $q = $db->prepare('SELECT * FROM users WHERE sEmail = :email LIMIT 1');
+    $q->bindValue(':email', $_POST['email']);
+    $q->execute();
+    $row = $q->fetch();
+    if( $row ){
+        sendError(400,'Email already registered',__LINE__);
+    }
+
+    $q = $db->prepare('SELECT * FROM users WHERE sUserName = :username LIMIT 1');
+    $q->bindValue(':username', $_POST['username']);
+    $q->execute();
+    $row = $q->fetch();
+    if( $row ){
+        sendError(400,'Username already registered',__LINE__);
+    }
+
+    $hashedpw = password_hash( $_POST['password'], PASSWORD_DEFAULT );
+
+    $q = $db->prepare('INSERT INTO users VALUES (:iId, :sEmail, :sUserName, :sPassword)');
+    $q->bindValue(':iId', null);
+    $q->bindValue(':sEmail', $_POST['email']);
+    $q->bindValue(':sPassword', $hashedpw);
+    $q->bindValue(':sUserName', $_POST['username']);
+    $q->execute();
+    $id = $db->lastInsertId();
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo '{"status":"1","message":"Account created. You can now log in.","userId":"'.$id.'"}';
+    exit;
+}catch(PDOException $ex){
+    sendError(500,'System under maintainance',__LINE__);
 }
 
-if( strlen($_POST['password']) < 5){
-  sendError('Password must be longer than 5 characters', __LINE__);
-}
-
-if( strlen($_POST['password']) > 20 ){
-  sendError('Password must not be longer than 20 characters', __LINE__);
-}
-
-$sUsers = file_get_contents(__DIR__ . '/../private/users.txt');
-$aUsers = json_decode($sUsers);
-
-foreach( $aUsers as $jUser ){
-  if( $_POST['email'] == $jUser->email ){
-    sendError('Email has already been used', __LINE__);
-  }
-}
-
-$hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-$aTweets = [];
-$jUser = new stdClass();
-$jUser->id = uniqid();
-$jUser->email = $_POST['email'];
-$jUser->password = $hashed_password;
-$jUser->tweets = $aTweets;
-array_push($aUsers, $jUser);
-file_put_contents(__DIR__ . '/../private/users.txt', json_encode($aUsers));
-echo '{"status":1,"msg":"user signed up"}';
-
-function sendError($sMessage, $iLine){
-  echo '{"status":0, "message":"'.$sMessage.'", "line":'.$iLine.'}';
+function sendError($iErrorCode, $sMessage, $iLine){
+  http_response_code($iErrorCode);
+  header('Content-Type: application/json');
+  echo '{"status":"0","message":"'.$sMessage.'","line":"'.$iLine.'"}';
   exit;
 }
+
+// function getUuid() {
+//     return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+//         // 32 bits for "time_low"
+//         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+//         // 16 bits for "time_mid"
+//         mt_rand( 0, 0xffff ),
+//         // 16 bits for "time_hi_and_version",
+//         // four most significant bits holds version number 4
+//         mt_rand( 0, 0x0fff ) | 0x4000,
+//         // 16 bits, 8 bits for "clk_seq_hi_res",
+//         // 8 bits for "clk_seq_low",
+//         // two most significant bits holds zero and one for variant DCE1.1
+//         mt_rand( 0, 0x3fff ) | 0x8000,
+//         // 48 bits for "node"
+//         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+//     );
+// }

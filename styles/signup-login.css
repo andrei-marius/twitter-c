@@ -43,13 +43,15 @@ span{
     font-weight: bold;
     margin: 30px 0 10px;
 }
+#email-container, #username-container, #password-container{
+    width: 100%;
+    height: 79px;
+    padding: 10px 15px;
+}
 #email-container{
-    width: 100%;
-    height: 79px;
     margin-top: 10px;
-    padding: 10px 15px;
 }
-#email-container div{
+#email-container div, #username-container div, #password-container div{
     width: 100%;
     height: 50%;
     font-size: 15px;
@@ -61,35 +63,7 @@ span{
     justify-content: start;
     padding: 5px 10px 0;
 }
-#email-container input{
-    width: 100%;
-    height: 50%;
-    outline: none;
-    border: none;
-    background: rgb(232, 240, 254);
-    border-bottom: 2px solid rgb(101, 119, 134);
-    padding: 9px 10px 8px;
-    font-size: 19px;
-    height: 35px;
-}
-#password-container{
-    width: 100%;
-    height: 79px;
-    padding: 10px 15px;
-}
-#password-container div{
-    width: 100%;
-    height: 50%;
-    font-size: 15px;
-    color: rgb(101, 119, 134);
-    font-weight: 400;
-    background: rgb(245, 248, 250);
-    display: grid;
-    align-items: center;
-    justify-content: start;
-    padding: 5px 10px 0;
-}
-#password-container input{
+#email-container input, #username-container input, #password-container input{
     width: 100%;
     height: 50%;
     outline: none;
@@ -117,5 +91,9 @@ span{
 }
 #error{
     color: rgb(224, 36, 94);
+    margin-top: 7px;
+}
+#success{
+    color: rgb(75, 181, 67);
     margin-top: 7px;
 }
