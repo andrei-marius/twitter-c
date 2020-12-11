@@ -5,7 +5,7 @@ try{
 
     require_once(__DIR__.'../../private/db.php');
 
-    $q = $db->prepare('SELECT * FROM tweets where iUserIdFk = :userId');
+    $q = $db->prepare('SELECT * FROM tweets where iUserIdFk = :userId ORDER BY dCreated DESC');
     $q->bindValue(':userId', $_SESSION['userId']);
     $q->execute();
     $aRows = $q->fetchAll();

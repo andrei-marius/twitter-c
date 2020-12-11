@@ -98,7 +98,7 @@ async function getTweets(){
             </div>
             <div class='tweet-row2'>
               <div class="tweetMessage">${tweet.msg}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${tweet.msg}">
+              <input class="newTweetMessage" oninput="checkEditTyping('${tweet.id}')" name="newTweetMessage" type="text" value="${tweet.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -168,7 +168,7 @@ async function addTweet(){
             </div>
             <div class='tweet-row2'>
               <div class="tweetMessage">${data.msg}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${data.msg}">
+              <input class="newTweetMessage" oninput="checkEditTyping('${data.tweetId}')" name="newTweetMessage" type="text" value="${data.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -239,7 +239,7 @@ async function modalAddTweet(){
             </div>
             <div class='tweet-row2'>
               <div class="tweetMessage">${data.msg}</div>
-              <input class="newTweetMessage" name="newTweetMessage" type="text" value="${data.msg}">
+              <input class="newTweetMessage" oninput="checkEditTyping('${data.tweetId}')" name="newTweetMessage" type="text" value="${data.msg}">
             </div>
             <div class='tweet-row3'>
               <div>
@@ -309,7 +309,28 @@ function editTweet(tweetId){
   rootElement.querySelector('.editBtn').style.display = 'none'
   rootElement.querySelector('.deleteBtn').style.display = 'none'
   rootElement.querySelector('.cancelBtn').style.display = 'block'
-  
+
+  checkEditTyping(tweetId)
+}
+
+function checkEditTyping(tweetId){
+    const rootElement = document.getElementById(`${tweetId}`)
+    if(rootElement.querySelector('.tweetMessage').textContent === rootElement.querySelector('.newTweetMessage').value){
+        rootElement.querySelector('.updateBtn').disabled = true
+        rootElement.querySelector('.updateBtn').style.cursor = 'initial'
+        rootElement.querySelector('.updateBtn').addEventListener('mouseenter', function(){
+            rootElement.querySelector('.updateBtn').style.background = 'none'
+        })
+    }else{
+        rootElement.querySelector('.updateBtn').disabled = false
+        rootElement.querySelector('.updateBtn').style.cursor = 'pointer'
+        rootElement.querySelector('.updateBtn').addEventListener('mouseenter', function(){
+            rootElement.querySelector('.updateBtn').style.background = 'rgba(29, 161, 242, 0.1)'
+        })
+        rootElement.querySelector('.updateBtn').addEventListener('mouseleave', function(){
+            rootElement.querySelector('.updateBtn').style.background = 'none'
+        })
+    }
 }
 
 function cancelEdit(tweetId){

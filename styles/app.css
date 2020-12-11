@@ -473,7 +473,7 @@ div#middle{
     padding: 0 10px;
     line-height: 1.4;
 }
-.updateBtn:hover, .editBtn:hover{
+.editBtn:hover{
     background: rgba(29, 161, 242, 0.1);
 }
 div#right{
