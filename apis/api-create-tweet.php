@@ -16,7 +16,7 @@ try{
     $id = $db->lastInsertId();
     http_response_code(200);
     header('Content-Type: application/json');
-    echo '{"status":"1","message":"tweet created","tweetId":"'.$id.'","msg":"'.$_POST['tweetMessage'].'","userId":"'.$_SESSION['userId'].'","userName":"'.$_SESSION['userName'].'"}';
+    echo '{"status":1,"message":"tweet created","tweetId":'.$id.',"msg":"'.$_POST['tweetMessage'].'","userId":'.$_SESSION['userId'].',"userName":"'.$_SESSION['userName'].'"}';
     exit;
 }catch(PDOException $ex){
     sendError(500,'System under maintainance',__LINE__);

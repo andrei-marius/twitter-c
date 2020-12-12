@@ -17,6 +17,9 @@ button{
     outline: none;
     cursor: pointer;
 }
+#loader-container{
+    text-align: center;
+}
 #page{
     display: grid;
     grid-template-columns: 10fr 25fr 15fr;
@@ -811,7 +814,4 @@ div#right{
     width: 74px;
     opacity: 0.5;
     cursor: initial;
-}
-#loader-container{
-    text-align: center;
 }

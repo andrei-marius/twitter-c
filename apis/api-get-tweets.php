@@ -18,7 +18,7 @@ try{
             );
         }, $aRows);
     header('Content-Type: application/json');
-    echo '{"status":"1","message":"tweets loaded","tweets":'.json_encode($aRows).',"userName":"'.$_SESSION['userName'].'"}';
+    echo '{"status":1,"message":"tweets loaded","tweets":'.json_encode($aRows).',"userName":"'.$_SESSION['userName'].'"}';
   }else{
     sendError(500,'no data',__LINE__);
   }

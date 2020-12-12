@@ -131,7 +131,7 @@ if( !$_SESSION ) header('Location: login.php');
                             type="rotate"
                             from="0 20 20"
                             to="360 20 20"
-                            dur="0.5s"
+                            dur="0.4s"
                             repeatCount="indefinite"/>
                     </path>
                     </svg>

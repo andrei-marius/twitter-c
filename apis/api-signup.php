@@ -40,7 +40,7 @@ try{
     $id = $db->lastInsertId();
     http_response_code(200);
     header('Content-Type: application/json');
-    echo '{"status":"1","message":"Account created. You can now log in.","userId":"'.$id.'"}';
+    echo '{"status":1,"message":"Account created. You can now log in.","userId":'.$id.'}';
     exit;
 }catch(PDOException $ex){
     sendError(500,'System under maintainance',__LINE__);

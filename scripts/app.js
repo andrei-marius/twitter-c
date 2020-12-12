@@ -71,14 +71,12 @@ window.onclick = function(event){
   }
 }
 
-async function getTweets(){
-  document.querySelector('#loader-container').style.display = 'block'
-  
+async function getTweets(){  
   try{
     const connection = await fetch('apis/api-get-tweets.php')
     const data = await connection.json()
 
-    if(data.status === '1'){
+    if(data.status === 1){
       data.tweets.forEach(function(tweet){
         const divTweet = `<div class='tweet' id='${tweet.id}'>
           <div class='tweet-column1'>
@@ -146,7 +144,7 @@ async function addTweet(){
     const connection = await fetch('apis/api-create-tweet.php', options)
     const data = await connection.json()
 
-    if(data.status === '1'){
+    if(data.status === 1){
       document.querySelector('#tweetMessage').value = ''
       checkTyping()
 
@@ -216,7 +214,7 @@ async function modalAddTweet(){
     const connection = await fetch('apis/api-modal-create-tweet.php', options)
     const data = await connection.json()
 
-    if(data.status === '1'){
+    if(data.status === 1){
       document.querySelector('#modalTweetMessage').value = ''
       modalCheckTyping()
       modal.style.display = "none"
@@ -289,7 +287,7 @@ async function removeTweet(userId, tweetId){
     const connection = await fetch('apis/api-delete-tweet.php', options)
     const data = await connection.json()
 
-    if( data.status === '1' ){
+    if(data.status === 1){
       document.getElementById(`${tweetId}`).remove()
     }else{
       console.log(data.message)
@@ -360,7 +358,7 @@ async function updateTweet(userId, tweetId){
     const connection = await fetch('apis/api-update-tweet.php', options)
     const data = await connection.json()
 
-    if( data.status === '1' ){
+    if(data.status === 1){
       cancelEdit(tweetId)
       const rootElement = document.getElementById(`${tweetId}`)
       rootElement.querySelector('.tweetMessage').textContent = newInputValue

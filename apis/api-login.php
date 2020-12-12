@@ -21,7 +21,7 @@ try{
       $_SESSION['email'] = $row[1];
       $_SESSION['userName'] = $row[2];
       header('Content-Type: application/json');
-      echo '{"status":"1","message":"user logged in","userId":"'.$_SESSION['userId'].'"}';
+      echo '{"status":1,"message":"user logged in","userId":'.$_SESSION['userId'].'}';
       exit;
     }else{
       sendError(401,'Incorrect password',__LINE__);

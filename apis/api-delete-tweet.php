@@ -13,7 +13,7 @@ try{
     }
     http_response_code(200);
     header('Content-Type: application/json');
-    echo '{"status":"1","message":"tweet deleted","tweetId":"'.$_POST['tweetId'].'"}';
+    echo '{"status":1,"message":"tweet deleted","tweetId":'.$_POST['tweetId'].'}';
     exit; 
 }catch(PDOException $ex){
     sendError(500,'System under maintainance',__LINE__);
