@@ -12,7 +12,7 @@ async function signUp(){
         const connection = await fetch('apis/api-signup.php', options)
         const data = await connection.json()
 
-        if(data.status === '1'){
+        if(data.status === 1){
             document.querySelector('#error').textContent = ''
             document.querySelector('#success').textContent = data.message
             document.querySelector("#signupForm").reset()
