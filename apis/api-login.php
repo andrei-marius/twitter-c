@@ -7,7 +7,7 @@ try{
 
     require_once( __DIR__.'../../private/db.php' );
 
-    $q = $db->prepare('SELECT * FROM users WHERE sEmail = :sEmail LIMIT 1');
+    $q = $db->prepare('SELECT * FROM twitter.users WHERE sEmail = :sEmail LIMIT 1');
     $q->bindValue(':sEmail', $_POST['email']);
     $q->execute();
     $row = $q->fetch();
@@ -36,4 +36,3 @@ function sendError($iResponseCode, $sMessage, $iLine){
     echo '{"message":"'.$sMessage.'","line":"'.$iLine.'"}';
     exit;
 }
-  

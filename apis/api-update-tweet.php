@@ -5,7 +5,7 @@ try{
     
     require_once(__DIR__.'../../private/db.php');
 
-    $q = $db->prepare('UPDATE tweets SET sTweet = :newTweetMsg WHERE iId = :tweetId');
+    $q = $db->prepare('UPDATE twitter.tweets SET sTweet = :newTweetMsg WHERE iId = :tweetId');
     $q->bindValue(':newTweetMsg', $_POST['newTweetMessage']);
     $q->bindValue(':tweetId', $_POST['tweetId']);
     $q->execute();

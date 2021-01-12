@@ -5,7 +5,7 @@ try{
     
     require_once(__DIR__.'../../private/db.php');
 
-    $q = $db->prepare('DELETE FROM tweets WHERE iId = :tweetId LIMIT 1');
+    $q = $db->prepare('DELETE FROM twitter.tweets WHERE iId = :tweetId LIMIT 1');
     $q->bindValue(':tweetId', $_POST['tweetId']);
     $q->execute();
     if( $q->rowCount() == 0 ){

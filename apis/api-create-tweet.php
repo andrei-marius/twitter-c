@@ -8,7 +8,7 @@ try{
     
     require_once(__DIR__.'../../private/db.php');
 
-    $q = $db->prepare('INSERT INTO tweets VALUES (:iId, :iUserIdFk, :sTweet, NOW())');
+    $q = $db->prepare('INSERT INTO twitter.tweets VALUES (:iId, :iUserIdFk, :sTweet, NOW())');
     $q->bindValue(':iId', null);
     $q->bindValue(':iUserIdFk', $_SESSION['userId']);
     $q->bindValue(':sTweet', $_POST['tweetMessage']);
@@ -28,6 +28,3 @@ function sendError($iErrorCode, $sMessage, $iLine){
     echo '{"message":"'.$sMessage.'", "line":"'.$iLine.'"}';
     exit;
 }
-
-
-

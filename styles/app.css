@@ -482,6 +482,8 @@ div#middle{
 div#right{
     width: 348px;
     height: 100%;
+    position: fixed;
+    margin-left: 902px;
 }
 #right-row1{
     background-color: rgb(230, 236, 240);
